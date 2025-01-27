@@ -24,4 +24,8 @@ module.exports = {
   },
   css: ['~/assets/css/main.css'],
   modules: ['@nuxtjs/axios'],
+  axios: {
+    baseURL: 'https://icanhazip.com',
+  },
+  plugins: ['~/plugins/axios'],
 }

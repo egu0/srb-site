@@ -27,7 +27,8 @@ export default {
     // this.$axios.get('https://icanhazip.com/').then((res) => {
     //   this.ip = res.data
     // })
-    this.$axios.$get('https://icanhazip.com/').then((res) => {
+    // this.$axios.$get('https://icanhazip.com/').then((res) => {
+    this.$axios.$get('/').then((res) => {
       this.ip = res
     })
   },

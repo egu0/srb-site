@@ -1,4 +1,7 @@
 module.exports = {
+  server: {
+    port: 3333,
+  },
   head: {
     title: '尚融宝',
     meta: [

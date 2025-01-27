@@ -45,7 +45,7 @@ module.exports = {
   plugins: [
     '~/plugins/axios',
     '~/plugins/element-ui.js',
-    '~/plugins/vue-qriously-plugin.js',
+    // '~/plugins/vue-qriously-plugin.js',
   ],
 
   // ssr: false, //设置为false表示客户端渲染，true为服务器端渲染，默认为true

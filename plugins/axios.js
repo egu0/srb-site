@@ -1,12 +1,13 @@
 import { Message } from 'element-ui'
 import cookie from 'js-cookie'
 
-export default function({ $axios, redirect }) {
+export default function ({ $axios, redirect }) {
   $axios.onRequest((config) => {
     let userInfo = cookie.get('userInfo')
     if (userInfo) {
       // debugger
       userInfo = JSON.parse(userInfo)
+      // 為請求添加 header
       config.headers['token'] = userInfo.token
     }
     console.log('Making request to ' + config.url)
@@ -21,6 +22,7 @@ export default function({ $axios, redirect }) {
     if (response.data.code === 0) {
       return response
     } else if (response.data.code === -211) {
+      // token 過期、未登錄
       console.log('用户校验失败')
       // debugger
       cookie.set('userInfo', '')

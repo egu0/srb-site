@@ -126,7 +126,14 @@ export default {
         return
       }
       userInfo = JSON.parse(userInfo)
-      this.userInfo = userInfo
+
+      // 校驗 Token（ 在「請求攔截器」中為每個請求都添加了「token 請求頭」）
+      this.$axios({
+        url: '/api/core/userInfo/checkToken',
+        method: 'get',
+      }).then((res) => {
+        this.userInfo = userInfo
+      })
     },
 
     //退出

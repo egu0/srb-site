@@ -114,7 +114,13 @@ export default {
     },
 
     //注册
-    register() {},
+    register() {
+      this.$axios
+        .$post('/api/core/userInfo/register', this.userInfo)
+        .then((res) => {
+          this.step = 2
+        })
+    },
   },
 }
 </script>

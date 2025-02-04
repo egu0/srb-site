@@ -20,28 +20,24 @@
           <li class="telNumber">
             <span class="dis">手机号码</span>
             <input class="input" v-model="userInfo.mobile" />
-            <button v-if="!sending" class="button" @click="send()">
+            <button v-if="!sended" class="button" @click="send()">
               获取验证码
             </button>
             <button v-else disabled class="button disabled">
-              {{ leftSecond }}秒后重发
+              {{ leftSecond }} 秒后重发
             </button>
           </li>
 
           <li>
             <span class="dis">短信验证码</span>
             <input class="input" v-model="userInfo.code" />
-            <span class="info">
-              请输入验证码
-            </span>
+            <span class="info"> 请输入验证码 </span>
           </li>
 
           <li>
             <span class="dis">密码</span>
             <input type="password" v-model="userInfo.password" class="input" />
-            <span class="info">
-              6-24个字符，英文、数字组成，区分大小写
-            </span>
+            <span class="info"> 6-24个字符，英文、数字组成，区分大小写 </span>
           </li>
 
           <li class="agree">
@@ -50,9 +46,7 @@
             <span>请查看协议</span>
           </li>
           <li class="btn">
-            <button @click="register()">
-              下一步
-            </button>
+            <button @click="register()">下一步</button>
           </li>
         </ul>
       </div>
@@ -68,9 +62,7 @@
         <ul>
           <li class="scses">
             {{ this.userInfo.mobile }} 恭喜您注册成功！
-            <NuxtLink class="blue" to="/login">
-              请登录
-            </NuxtLink>
+            <NuxtLink class="blue" to="/login"> 请登录 </NuxtLink>
           </li>
         </ul>
       </div>
@@ -87,18 +79,39 @@ export default {
       userInfo: {
         userType: 1,
       },
-      sending: false, // 是否发送验证码
-      second: 10, // 倒计时间
+      sended: false, // 是否发送验证码
+      second: 60, // 倒计时间
       leftSecond: 0, //剩余时间
     }
   },
 
   methods: {
     //发短信
-    send() {},
+    send() {
+      if (!this.userInfo.mobile) {
+        this.$message.error('请输入手机号码')
+        return
+      }
+      // 校验手机号格式
+      this.$axios.$get('/api/sms/send/' + this.userInfo.mobile).then((res) => {
+        this.$message.success(res.message)
+        this.sended = true
+        this.leftSecond = this.second
+        this.timeDown()
+      })
+    },
 
     //倒计时
-    timeDown() {},
+    timeDown() {
+      setTimeout(() => {
+        if (this.leftSecond == 0) {
+          this.sended = false
+        } else {
+          this.leftSecond--
+          this.timeDown()
+        }
+      }, 1000)
+    },
 
     //注册
     register() {},

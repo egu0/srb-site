@@ -92,19 +92,24 @@ export default {
         this.$message.error('请输入手机号码')
         return
       }
-      // 校验手机号格式
+      // TODO 校验手机号格式
+      // 立馬進行到計時（就算手機號已經註冊也進行到計時等待）
+      this.sended = true
+      this.leftSecond = this.second
+      this.timeDown()
       this.$axios.$get('/api/sms/send/' + this.userInfo.mobile).then((res) => {
-        this.$message.success(res.message)
-        this.sended = true
-        this.leftSecond = this.second
-        this.timeDown()
+        if (res.code === 207) {
+          this.$message.danger(res.message)
+        } else {
+          this.$message.success(res.message)
+        }
       })
     },
 
     //倒计时
     timeDown() {
       setTimeout(() => {
-        if (this.leftSecond == 0) {
+        if (this.leftSecond <= 0) {
           this.sended = false
         } else {
           this.leftSecond--

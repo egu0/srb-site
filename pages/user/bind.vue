@@ -96,7 +96,14 @@ export default {
           dangerouslyUseHTMLString: true,
           confirmButtonText: '立即前往',
           callback: (action) => {
-            // TODO
+            if (action !== 'confirm') {
+              return
+            }
+            this.$axios
+              .$post('/api/core/userBind/auth/bind', this.userBind)
+              .then((res) => {
+                document.writeln(res.data.formStr)
+              })
           },
         }
       )

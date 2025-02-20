@@ -165,7 +165,7 @@
             <el-button
               type="primary"
               :disabled="submitBtnDisabled"
-              @click="save"
+              @click="save()"
               >提交</el-button
             >
           </el-form-item>
@@ -188,7 +188,7 @@
       <div v-if="active === 2">
         <div style="margin-top: 40px">
           <el-alert
-            v-if="borrowerStatus === 1"
+            v-if="borrowerStatus === 2"
             type="success"
             title="您的认证审批已经通过"
             show-icon
@@ -236,7 +236,11 @@ export default {
   methods: {
     save() {
       this.submitBtnDisabled = true
-      this.active = 2
+      this.$axios
+        .$post('/api/core/borrower/auth/save', this.borrower)
+        .then(() => {
+          this.active = 1
+        })
     },
     onUploadRemove(file, fileList) {
       // console.log('fileList', fileList, file)

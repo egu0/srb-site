@@ -34,7 +34,7 @@ module.exports = {
   ],
 
   env: {
-    BASE_API: 'http://localhost',
+    BASE_API: 'http://localhost:5047',
   },
 
   axios: {

@@ -102,6 +102,7 @@
         <h6>身份认证信息</h6>
         <el-form label-width="120px">
           <el-form-item label="身份证人像面">
+            <!-- 在文件上传时，:data 中绑定的内容会被加入【post 请求体】提交给后台 -->
             <el-upload
               :action="uploadUrl"
               :data="{ module: 'idCard1' }"
@@ -212,7 +213,7 @@ export default {
 
     return {
       active: 0,
-      borrowerStatus: -1,
+      borrowerStatus: null,
       // 提交按钮是否禁用，防止表单重复提交
       submitBtnDisabled: false,
       //借款人信息
@@ -224,7 +225,7 @@ export default {
       incomeList: [], //月收入列表
       returnSourceList: [], //还款来源列表
       contactsRelationList: [], //联系人关系
-      uploadUrl: BASE_API + '/api/oss/file/upload', //文件上传地址
+      uploadUrl: BASE_API + '/api/oss/upload', //文件上传地址
     }
   },
 
@@ -234,10 +235,29 @@ export default {
       this.active = 2
     },
     onUploadRemove() {},
-    onUploadSuccessIdCard1() {},
-    onUploadSuccessIdCard2() {},
-    onUploadSuccessHouse() {},
-    onUploadSuccessCar() {},
+    onUploadSuccessIdCard1(response, file) {
+      this.onUploadSuccess(response, file, 'idCard1')
+    },
+    onUploadSuccessIdCard2(response, file) {
+      this.onUploadSuccess(response, file, 'idCard2')
+    },
+    onUploadSuccessHouse(response, file) {
+      this.onUploadSuccess(response, file, 'house')
+    },
+    onUploadSuccessCar(response, file) {
+      this.onUploadSuccess(response, file, 'car')
+    },
+    onUploadSuccess(response, file, moduleName) {
+      if (response.code === 0) {
+        this.borrower.borrowerAttachList.push({
+          imageName: file.name,
+          imageUrl: response.data.url,
+          imageType: moduleName,
+        })
+      } else {
+        this.$message.error(response.message)
+      }
+    },
   },
 }
 </script>

@@ -229,6 +229,10 @@ export default {
     }
   },
 
+  created() {
+    this.initSelectionData()
+  },
+
   methods: {
     save() {
       this.submitBtnDisabled = true
@@ -268,6 +272,36 @@ export default {
       } else {
         this.$message.error(response.message)
       }
+    },
+    initSelectionData() {
+      // 学历列表
+      this.$axios
+        .$get('/api/core/dict/findByDictCode/education')
+        .then((res) => {
+          this.educationList = res.data.list
+        })
+
+      // 行业列表
+      this.$axios.$get('/api/core/dict/findByDictCode/industry').then((res) => {
+        this.industryList = res.data.list
+      })
+
+      // 月收入列表
+      this.$axios.$get('/api/core/dict/findByDictCode/income').then((res) => {
+        this.incomeList = res.data.list
+      })
+
+      // 还款来源列表
+      this.$axios
+        .$get('/api/core/dict/findByDictCode/returnSource')
+        .then((res) => {
+          this.returnSourceList = res.data.list
+        })
+
+      // 联系人关系列表
+      this.$axios.$get('/api/core/dict/findByDictCode/relation').then((res) => {
+        this.contactsRelationList = res.data.list
+      })
     },
   },
 }

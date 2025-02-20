@@ -1,9 +1,9 @@
 <template>
   <div class="personal-main">
-    <div class="personal-pay">
+    <div class="personal-pay" v-loading="loading">
       <h3><i>借款人信息认证</i></h3>
 
-      <el-steps :active="active" style="margin: 40px">
+      <el-steps :active="active" style="margin: 40px" finish-status="success">
         <el-step title="填写借款人信息"></el-step>
         <el-step title="提交平台审核"></el-step>
         <el-step title="等待认证结果"></el-step>
@@ -212,7 +212,10 @@ export default {
     let BASE_API = process.env.BASE_API
 
     return {
-      active: 0,
+      active: null,
+      // 初次进入页面时，显示加载中
+      loading: null,
+      // 借款人认证状态
       borrowerStatus: null,
       // 提交按钮是否禁用，防止表单重复提交
       submitBtnDisabled: false,
@@ -229,11 +232,32 @@ export default {
     }
   },
 
-  created() {
-    this.initSelectionData()
+  mounted() {
+    this.loading = true
+    // 该方法需要放到 mounted 中，否则发送的请求不会被拦截和设置 token
+    this.determineStatus()
   },
 
   methods: {
+    /**
+     * 确定借款人认证状态，根据状态显示不同的页面
+     */
+    determineStatus() {
+      this.$axios
+        .$get('/api/core/borrower/auth/getBorrowerStatus')
+        .then((res) => {
+          this.loading = false
+          this.borrowerStatus = res.data.status
+          if (this.borrowerStatus === 0) {
+            this.active = 0
+            this.initSelectionData()
+          } else if (this.borrowerStatus === 1) {
+            this.active = 1
+          } else if (this.borrowerStatus === 2 || this.borrowerStatus === -1) {
+            this.active = 2
+          }
+        })
+    },
     save() {
       this.submitBtnDisabled = true
       this.$axios

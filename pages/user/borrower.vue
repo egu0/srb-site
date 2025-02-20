@@ -234,7 +234,18 @@ export default {
       this.submitBtnDisabled = true
       this.active = 2
     },
-    onUploadRemove() {},
+    onUploadRemove(file, fileList) {
+      // console.log('fileList', fileList, file)
+      // 删除 OSS 服务器上的内容
+      this.$axios
+        .$delete('/api/oss/remove?url=' + file.response.data.url)
+        .then(() => {
+          this.borrower.borrowerAttachList =
+            this.borrower.borrowerAttachList.filter(function (item) {
+              return item.imageUrl != file.response.data.url
+            })
+        })
+    },
     onUploadSuccessIdCard1(response, file) {
       this.onUploadSuccess(response, file, 'idCard1')
     },

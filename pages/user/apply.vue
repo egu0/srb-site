@@ -1,9 +1,9 @@
 <template>
   <div class="personal-main">
-    <div class="personal-pay">
+    <div class="personal-pay" v-loading="loading">
       <h3><i>借款申请</i></h3>
 
-      <el-steps :active="active" style="margin: 40px" v-loading="loading">
+      <el-steps :active="active" style="margin: 40px" finish-status="success">
         <el-step title="提交借款信息"></el-step>
         <el-step title="审核"></el-step>
         <el-step title="等待审核结果"></el-step>
@@ -145,8 +145,7 @@ export default {
   // mounted 钩子会在浏览器端执行
   mounted() {
     this.loading = true
-    this.initSelected()
-    this.fetchBorrowAmount()
+    this.fetchBorrowInfoStatus()
   },
   methods: {
     // 获取「下拉列表」数据
@@ -162,6 +161,23 @@ export default {
         this.moneyUseList = res.data.list
       })
     },
+    fetchBorrowInfoStatus() {
+      this.$axios
+        .$get('/api/core/borrowInfo/auth/getBorrowInfoStatus')
+        .then((res) => {
+          this.borrowInfoStatus = res.data.status
+          if (this.borrowInfoStatus === 0) {
+            this.active = 0
+            this.initSelected()
+            this.fetchBorrowAmount()
+          } else if (this.borrowInfoStatus === 1) {
+            this.active = 1
+          } else {
+            this.active = 2
+          }
+          this.loading = false
+        })
+    },
     fetchBorrowAmount() {
       this.$axios
         .$get('/api/core/borrowInfo/auth/getBorrowAmount')
@@ -174,8 +190,8 @@ export default {
     save() {
       this.$axios
         .$post('/api/core/borrowInfo/auth/save', this.borrowInfo)
-        .then((res) => {
-          this.active = 1
+        .then(() => {
+          this.fetchBorrowInfoStatus()
         })
     },
   },

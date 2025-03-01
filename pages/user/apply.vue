@@ -3,7 +3,7 @@
     <div class="personal-pay">
       <h3><i>借款申请</i></h3>
 
-      <el-steps :active="active" style="margin: 40px">
+      <el-steps :active="active" style="margin: 40px" v-loading="loading">
         <el-step title="提交借款信息"></el-step>
         <el-step title="审核"></el-step>
         <el-step title="等待审核结果"></el-step>
@@ -16,7 +16,7 @@
               <el-input v-model="borrowInfo.amount" />
             </el-col>
             <el-col :span="6">
-              &nbsp;&nbsp;您最多可借款{{ borrowAmount }}元
+              &nbsp;&nbsp;您最多可借款 {{ borrowAmount }} 元
             </el-col>
           </el-form-item>
 
@@ -121,7 +121,8 @@
 export default {
   data() {
     return {
-      active: 0, //步骤
+      loading: null,
+      active: null, //步骤
       borrowInfoStatus: null, //审批状态
       //借款申请
       borrowInfo: {
@@ -132,6 +133,51 @@ export default {
       returnMethodList: [], //还款方式列表
       moneyUseList: [], //资金用途列表
     }
+  },
+  watch: {
+    'borrowInfo.amount'(val) {
+      if (val > this.borrowAmount) {
+        this.$message.error('借款金额不能大于最大借款额度')
+        this.borrowInfo.amount = this.borrowAmount
+      }
+    },
+  },
+  // mounted 钩子会在浏览器端执行
+  mounted() {
+    this.loading = true
+    this.initSelected()
+    this.fetchBorrowAmount()
+  },
+  methods: {
+    // 获取「下拉列表」数据
+    initSelected() {
+      //还款方式列表
+      this.$axios
+        .$get('/api/core/dict/findByDictCode/returnMethod')
+        .then((res) => {
+          this.returnMethodList = res.data.list
+        })
+      //资金用途列表
+      this.$axios.$get('/api/core/dict/findByDictCode/moneyUse').then((res) => {
+        this.moneyUseList = res.data.list
+      })
+    },
+    fetchBorrowAmount() {
+      this.$axios
+        .$get('/api/core/borrowInfo/auth/getBorrowAmount')
+        .then((res) => {
+          this.borrowAmount = res.data.amount
+          this.loading = false
+          this.active = 0
+        })
+    },
+    save() {
+      this.$axios
+        .$post('/api/core/borrowInfo/auth/save', this.borrowInfo)
+        .then((res) => {
+          this.active = 1
+        })
+    },
   },
 }
 </script>

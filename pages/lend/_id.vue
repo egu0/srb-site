@@ -90,7 +90,7 @@
             </el-form-item>
           </el-form>
           <p>
-            您的账户余额 <span class="c-orange">{{ account }}</span> 元，
+            您的账户余额 <span class="c-orange">{{ amount }}</span> 元，
             <a href="/user/recharge" class="c-888">马上充值</a>
           </p>
         </div>
@@ -430,7 +430,7 @@ export default {
 
   data() {
     return {
-      account: 0, //账户余额
+      amount: 0, //账户余额
       agree: false, //是否同意协议
       invest: {
         lendId: 0, //标的id
@@ -446,7 +446,7 @@ export default {
   //此时方法在客户端的浏览器中执行，可以获取到cookie
   mounted() {
     //查询账户余额
-    this.fetchAccount()
+    this.fetchAccountAmount()
 
     //判断登录人的用户类型
     this.fetchUserType()
@@ -454,7 +454,15 @@ export default {
 
   methods: {
     //查询账户余额
-    fetchAccount() {},
+    fetchAccountAmount() {
+      let userInfo = cookie.get('userInfo')
+      if (userInfo) {
+        this.userType = JSON.parse(userInfo).userType
+        this.$axios.$get('/api/core/userAccount/auth/getAccAmt').then((res) => {
+          this.amount = res.data.amount
+        })
+      }
+    },
 
     //获取登录人的用户类型
     fetchUserType() {},

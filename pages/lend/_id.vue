@@ -66,13 +66,14 @@
               <el-input
                 v-model="invest.investAmount"
                 :disabled="lend.status != 1"
-                @blur="getInterestCount()"
+                @input="getInterestCount"
               >
                 <template slot="append">元</template>
               </el-input>
             </el-form-item>
-            <el-form-item label="您将获得收益">
-              <span class="c-orange">{{ interestCount }}</span>
+            <el-form-item label="您将获得总收益">
+              <span v-if="calculating" class="c-orange">计算中</span>
+              <span v-else class="c-orange">{{ interestCount }}</span>
               元
             </el-form-item>
             <el-form-item>
@@ -90,7 +91,7 @@
             </el-form-item>
           </el-form>
           <p>
-            您的账户余额 <span class="c-orange">{{ amount }}</span> 元，
+            您的账户余额 <span class="c-orange">{{ amount }}</span> 元。
             <a href="/user/recharge" class="c-888">马上充值</a>
           </p>
         </div>
@@ -433,13 +434,15 @@ export default {
       amount: 0, //账户余额
       agree: false, //是否同意协议
       invest: {
-        lendId: 0, //标的id
+        lendId: 0, //标的 id
         investAmount: 100, //投资金额
       },
       interestCount: 0, //将获得收益
       userType: 0, //用户类型
+      calculating: true, // 是否正在计算收益
       lendItemList: [],
       lendReturnList: [],
+      lendItemReturnList: [],
     }
   },
 
@@ -447,6 +450,9 @@ export default {
   mounted() {
     //查询账户余额
     this.fetchAccountAmount()
+
+    //计算收益
+    this.getInterestCount()
 
     //判断登录人的用户类型
     this.fetchUserType()
@@ -468,7 +474,21 @@ export default {
     fetchUserType() {},
 
     //计算收益
-    getInterestCount() {},
+    getInterestCount() {
+      this.calculating = true
+      let amount = this.invest.investAmount
+      if (!this.invest.investAmount) {
+        amount = 0
+      }
+      this.$axios
+        .$get(
+          `/api/core/lend/getInterestCount/${amount}/${this.lend.lendYearRate}/${this.lend.period}/${this.lend.returnMethod}`
+        )
+        .then((res) => {
+          this.interestCount = res.data.interest
+          this.calculating = false
+        })
+    },
 
     //投资
     commitInvest() {},

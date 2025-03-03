@@ -491,7 +491,64 @@ export default {
     },
 
     //投资
-    commitInvest() {},
+    commitInvest() {
+      // 校验用户是否登录
+      let userInfo = cookie.get('userInfo')
+      if (!userInfo) {
+        window.location.href = '/login'
+        return
+      }
+
+      // 校验当前用户是否是投资人
+      let userType = JSON.parse(userInfo).userType
+      if (userType == 2) {
+        this.$message.error('借款人无法投资')
+        return
+      }
+
+      // 判断投资额是否是 100 的整数倍
+      let investAmount = Number(this.invest.investAmount || '0')
+      if (investAmount === 0) {
+        this.$message.error('请输入投标金额')
+        return
+      }
+      if (investAmount % 100 !== 0) {
+        this.$message.error(`投资金额必须是 ${this.lend.lowestAmount} 的整数倍`)
+        return
+      }
+
+      // 判断余额是否足够
+      if (investAmount > this.amount) {
+        this.$message.error('账户余额不足，请充值')
+        return
+      }
+
+      // 判断标的是否超卖
+      if (this.lend.investAmount + investAmount > this.lend.amount) {
+        this.$message.error('投资金额超过标的剩余金额')
+        return
+      }
+
+      // 数据提交
+      this.$alert(
+        '<div style="size: 18px; color: red;">您即将前往汇付宝平台确认标的</div>',
+        '前往汇付宝资金托管平台',
+        {
+          dangerouslyUseHTMLString: true,
+          confirmButtonText: '立即前往',
+          callback: (action) => {
+            if (action === 'confirm') {
+              this.invest.lendId = this.lend.id
+              this.$axios
+                .$post('/api/core/lendItem/auth/commitInvest', this.invest)
+                .then((res) => {
+                  document.write(res.data.formStr)
+                })
+            }
+          },
+        }
+      )
+    },
   },
 }
 </script>

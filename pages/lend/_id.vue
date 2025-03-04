@@ -420,6 +420,10 @@ export default {
       '/api/core/lendItem/list/' + lendId
     )
 
+    let responseLendReturnList = await $axios.$get(
+      '/api/core/lendReturn/list/' + lendId
+    )
+
     return {
       //标的详情
       lend: res.data.detail.lend,
@@ -427,6 +431,8 @@ export default {
       borrower: res.data.detail.borrower,
       //投资列表
       lendItemList: responseLendItemList.data.list,
+      //还款计划列表
+      lendReturnList: responseLendReturnList.data.list,
     }
   },
 
@@ -441,9 +447,7 @@ export default {
       interestCount: 0, //将获得收益
       userType: 0, //用户类型
       calculating: true, // 是否正在计算收益
-      lendReturnList: [],
       lendItemReturnList: [],
-      // investProgress: 0,
     }
   },
 

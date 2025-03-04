@@ -40,17 +40,11 @@
             <li class="colspan" style="line-height: 60px">
               <span class="c-888 fl">投标进度：</span>
               <div class="progress-bar fl" style="margin-top: 26px">
-                <span
-                  :style="
-                    'width:' + (lend.investAmount / lend.amount) * 100 + '%'
-                  "
-                ></span>
+                <span :style="'width:' + investProgress + '%'"></span>
               </div>
-              <span class="c-orange">
-                {{ (lend.investAmount / lend.amount) * 100 }}%
-              </span>
+              <span class="c-orange"> {{ investProgress }}% </span>
               <span>
-                已有{{ lend.investNum }}人投资{{ lend.investAmount }}元
+                已有 {{ lend.investNum }} 人投资 {{ lend.investAmount }} 元
               </span>
             </li>
           </ul>
@@ -91,7 +85,7 @@
             </el-form-item>
           </el-form>
           <p>
-            您的账户余额 <span class="c-orange">{{ amount }}</span> 元。
+            您的账户余额 <span class="c-orange">{{ amount }}</span> 元
             <a href="/user/recharge" class="c-888">马上充值</a>
           </p>
         </div>
@@ -443,7 +437,17 @@ export default {
       lendItemList: [],
       lendReturnList: [],
       lendItemReturnList: [],
+      // investProgress: 0,
     }
+  },
+
+  computed: {
+    //计算进度条的宽度
+    investProgress() {
+      // 保留两位小数
+      let progress = (this.lend.investAmount / this.lend.amount) * 100
+      return progress.toFixed(2)
+    },
   },
 
   //此时方法在客户端的浏览器中执行，可以获取到cookie

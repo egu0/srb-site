@@ -415,11 +415,18 @@ export default {
   async asyncData({ $axios, params }) {
     let lendId = params.id
     let res = await $axios.$get('/api/core/lend/detail/' + lendId)
+
+    let responseLendItemList = await $axios.$get(
+      '/api/core/lendItem/list/' + lendId
+    )
+
     return {
       //标的详情
       lend: res.data.detail.lend,
       //借款人信息
       borrower: res.data.detail.borrower,
+      //投资列表
+      lendItemList: responseLendItemList.data.list,
     }
   },
 
@@ -434,7 +441,6 @@ export default {
       interestCount: 0, //将获得收益
       userType: 0, //用户类型
       calculating: true, // 是否正在计算收益
-      lendItemList: [],
       lendReturnList: [],
       lendItemReturnList: [],
       // investProgress: 0,

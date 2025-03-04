@@ -67,7 +67,13 @@ export default {
           confirmButtonText: '立即前往',
           callback: (action) => {
             if (action === 'confirm') {
-              //提现
+              this.$axios
+                .$post(
+                  '/api/core/userAccount/auth/commitWithdraw/' + this.fetchAmt
+                )
+                .then((res) => {
+                  document.write(res.data.formStr)
+                })
             }
           },
         }

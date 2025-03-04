@@ -447,7 +447,7 @@ export default {
       interestCount: 0, //将获得收益
       userType: 0, //用户类型
       calculating: true, // 是否正在计算收益
-      lendItemReturnList: [],
+      lendItemReturnList: [], // 回款计划
     }
   },
 
@@ -470,9 +470,21 @@ export default {
 
     //判断登录人的用户类型
     this.fetchUserType()
+
+    //获取回款计划
+    this.fetchLendItemReturnList()
   },
 
   methods: {
+    // 获取回款计划
+    fetchLendItemReturnList() {
+      this.$axios
+        .$get('/api/core/lendItemReturn/list/' + this.$route.params.id)
+        .then((res) => {
+          this.lendItemReturnList = res.data.list
+        })
+    },
+
     //查询账户余额
     fetchAccountAmount() {
       let userInfo = cookie.get('userInfo')
